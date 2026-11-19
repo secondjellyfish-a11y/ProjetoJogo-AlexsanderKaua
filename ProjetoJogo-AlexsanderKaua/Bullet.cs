@@ -21,10 +21,12 @@
 
         public void Mover()
         {
+            //Move sempre para a direita, aumentando a posição horizontal (Left) da bala
             Left += Velocidade;
         }
         public bool SaiuDaTela(int larguraTela)
         {
+            //Retorna um booleano indicando se a bala saiu da tela (true) ou não (false)
             return Left + Width > 1920;
         }
 

@@ -77,7 +77,6 @@
 
         public Bullet Atirar()
         {
-            
             // Cria uma nova bala na posição do jogador ajustada
             Bullet bala = new Bullet(
                 Left + (Width / 2),

@@ -3,44 +3,49 @@
     public partial class Game : Form
     {
         private Player jogador;
-        public Game(System.Windows.Forms.Timer gameTimer)
+        public Game(System.Windows.Forms.Timer prevTimer)
         {
             InitializeComponent();
             this.DoubleBuffered = true; //Ativa o Double Buffer para o Form, evitando que os elementos "piscem" na tela
 
             IniciarJogo();
 
+            //Mantém o Timer do outro Form, por conveniência.
+            this.gameTimer = prevTimer;
 
-            globalTimerFPS = gameTimer;
 
-
-            //Adiciona os eventos do Timer
+            //Adiciona um evento novo ao Timer. Isso NÃO remove o evento que já existia, apenas adiciona um novo evento para ser executado a cada tick do Timer.
             gameTimer.Tick += (sender, e) =>
             {
-
-                // Remove as balas que saíram da tela do formulário
-                for (int i = jogador.Balas.Count - 1; i >= 0; i--)
-                {
-                    Bullet bala = jogador.Balas[i];
-                    //Atualizar posição da bala
-                    bala.Mover();
-                    //Checar se a bala saiu da tela
-                    if (bala.SaiuDaTela(ClientSize.Width))
-                    {
-                        jogador.Balas.RemoveAt(i);
-                        Controls.Remove(bala);
-                        bala.Dispose();
-                    }
-                }
-
+                LimparProjeteis(); //Limpa as balas que saíram da tela
             };
 
-            gameTimer.Start();
-
         }
-        private System.Windows.Forms.Timer globalTimerFPS; //Mantém o Timer do outro Form
+        private System.Windows.Forms.Timer gameTimer; //Mantém o Timer do outro Form
+
+        public void LimparProjeteis()
+        {
+            // Remove as balas que saíram da tela do formulário
+            for (int i = jogador.Balas.Count - 1; i >= 0; i--)
+            {
+                Bullet bala = jogador.Balas[i];
+                //Atualizar posição da bala
+                bala.Mover();
+                //Checar se a bala saiu da tela
+                if (bala.SaiuDaTela(ClientSize.Width))
+                {
+                    jogador.Balas.RemoveAt(i);
+                    Controls.Remove(bala);
+                    bala.Dispose();
+
+                }
+            }
+        }
         private void IniciarJogo()
         {
+            //Iniciar o Timer (começa a contar o tempo e executar os eventos a cada tick)
+            gameTimer.Start();
+
             //Instanciar um objeto Player;
             jogador = new Player();
             //Definir uma posição para o jogador.
