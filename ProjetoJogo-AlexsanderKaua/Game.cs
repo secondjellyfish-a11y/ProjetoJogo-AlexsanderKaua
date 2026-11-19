@@ -20,6 +20,8 @@
                 LimparProjeteis(); //Limpa as balas que saíram da tela
             };
 
+ //Iniciar o Timer (começa a contar o tempo e executar os eventos a cada tick)
+            gameTimer.Start();
         }
         private System.Windows.Forms.Timer gameTimer; //Mantém o Timer do outro Form
 
@@ -43,8 +45,7 @@
         }
         private void IniciarJogo()
         {
-            //Iniciar o Timer (começa a contar o tempo e executar os eventos a cada tick)
-            gameTimer.Start();
+           
 
             //Instanciar um objeto Player;
             jogador = new Player();
@@ -75,26 +76,7 @@
             }
         }
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            base.OnPaint(e);
-
-            /* Desenhar as balas na tela para adicionar camadas próprias 
-            * Normalmente, o Windows Forms desenha os controles automaticamente, mas,
-            * eles não apresentam transparência, então para as balas não ficarem uma em cima da outra, precisamos desenhá-las manualmente.
-            */
-
-            //Plano de fundo (quando tiver fundo)
-
-            //Jogador
-            e.Graphics.DrawImage(jogador.Image, jogador.Left, jogador.Top, jogador.Width, jogador.Height);
-            //Balas do jogador
-            jogador.Balas.ForEach(bala =>
-            {
-                //Desenha a bala na tela
-                e.Graphics.DrawImage(bala.Image, bala.Left, bala.Top, bala.Width, bala.Height);
-            });
-        }
+       
 
         private void Game_Load(object sender, EventArgs e)
         {
