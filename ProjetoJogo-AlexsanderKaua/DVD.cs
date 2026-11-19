@@ -87,6 +87,7 @@
                 }
             }
 
+            this.Refresh(); //Atualiza o controle, para que o movimento seja visível na tela
 
         }
 

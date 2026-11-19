@@ -3,6 +3,7 @@
     //Classe Player (comentado por Alexsander)
     public class Player : PictureBox
     {
+        public List<Bullet> Balas = new List<Bullet>(); //Lista de balas disparadas pelo jogador
 
         public int Velocidade { get; set; } = 30; //Variável para a velocidade de movimento do jogador (com a entrada do jogador)
 
@@ -72,6 +73,18 @@
                 }
             }
 
+        }
+
+        public Bullet Atirar()
+        {
+            
+            // Cria uma nova bala na posição do jogador ajustada
+            Bullet bala = new Bullet(
+                Left + (Width / 2),
+                Top + 15
+                );
+            Balas.Add(bala);
+            return bala;
         }
     }
 }
