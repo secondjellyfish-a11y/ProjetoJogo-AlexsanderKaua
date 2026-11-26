@@ -27,7 +27,7 @@
         public bool SaiuDaTela(int larguraTela)
         {
             //Retorna um booleano indicando se a bala saiu da tela (true) ou não (false)
-            return Left + Width > 1920;
+            return Left + Width > Parent.ClientSize.Width;
         }
 
 

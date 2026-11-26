@@ -1,17 +1,17 @@
 namespace ProjetoJogo_AlexsanderKaua
 {
-    
+
     public partial class Form1 : Form
     {
 
         //Comentado por Alexsander.
         public Form1()
         {
-         
+
             InitializeComponent();
 
             //Chamar o método de Timer
-            SetupTimer(); 
+            SetupTimer();
 
             //Ativar o Double Buffer, para o objeto DvD e outros não ficarem "piscando" na tela (opções gráficas para o controle do Form)
             this.DoubleBuffered = true;
@@ -19,7 +19,7 @@ namespace ProjetoJogo_AlexsanderKaua
             this.Controls.Add(estimulation); //Adiciona o objeto DvD na tela do Form
         }
 
-      
+
 
         //Objeto privado de Timer (age como Timer global)
         public readonly System.Windows.Forms.Timer globalTimerFPS = new System.Windows.Forms.Timer();
@@ -47,8 +47,7 @@ namespace ProjetoJogo_AlexsanderKaua
             // Código que roda a cada 2 frames 
             if (frameCount % 2 == 0)
             {
-                //Faz o DVD se mover na tela, passando a largura e altura do Form para o método Mova da classe DvD
-                estimulation.mova(ClientSize.Width, ClientSize.Height);
+                //Não precisamos chamar o método do DVD, já que tem um timer interno
             }
 
             // Código que roda a cada 32 frames (aprox. 1 vez por segundo)

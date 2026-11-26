@@ -6,6 +6,7 @@
         public List<Bullet> Balas = new List<Bullet>(); //Lista de balas disparadas pelo jogador
 
         public int Velocidade { get; set; } = 30; //Variável para a velocidade de movimento do jogador (com a entrada do jogador)
+        public int Vida { get; set; } = 5;
 
         //Tamanho em pixels do jogador. Essencialmente o tamanho do controle que será o objeto "jogador".
         public const int pixel_Width = 200;

@@ -14,31 +14,82 @@
 
         /*  Variáveis de Propriedade  */
         //Tamanho
-        public int pixel_Width { get; set; } = 200; //Largura que o controle terá
-        public int pixel_Height { get; set; } = 100; //Altura que o controle terá
+        public int PixelWidth { get; set; } = 200; //Largura que o controle terá
+        public int PixelHeight { get; set; } = 100; //Altura que o controle terá
 
-        public string[] frames { get; set; } = ["dvd_nossa.png", "dvd_nossa2.png", "dvd_nossa3.png"];
+        private System.Windows.Forms.Timer thisTimer = new System.Windows.Forms.Timer();
+        private int frameCount = 0;
+        private int TimerInterval = 32;
+
+
+        public string[] Frames { get; set; } = ["dvd_nossa.png", "dvd_nossa2.png", "dvd_nossa3.png"];
+        public string currentFrame { get; set; }
+        public int FrameTurnSpeed = 30; //Frames até mudar de frame novamente
+
+
 
 
         //=Método construtor=
         public DvD()
         {
             /*  Mudar propriedades internas */
+
+            //Ativar o timer
+            thisTimer.Interval = TimerInterval;
+            thisTimer.Tick += internalTimer_Tick;
+           
+
+            currentFrame = Frames[0]; //Mudar o frame atual para o primeiro frame em Frames
+
             //*Controle
-            Size = new System.Drawing.Size(pixel_Width, pixel_Height); //Criar novo Drawing.Size baseado nas variáveis de tamanho. 
-                                                                       //*Desenho
+            Size = new System.Drawing.Size(PixelWidth, PixelHeight); //Criar novo Drawing.Size baseado nas variáveis de tamanho. 
+                                                                     //*Desenho
             SizeMode = PictureBoxSizeMode.StretchImage;
-            string caminhoImagem = Path.Combine(
-                Application.StartupPath,
-                "Assets/",
-                "dvd_nossa.png"
-                );
-            Image = Image.FromFile(caminhoImagem);
+
+            Image = Image.FromFile(FindImageFile(currentFrame));
             BackColor = Color.Transparent;
 
+ thisTimer.Start();
         }
 
-        public void mova(int larguraTela, int alturaTela)
+        
+
+        private string FindImageFile(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return string.Empty;
+
+            return Path.Combine(Application.StartupPath, "Assets/", name);
+        }
+        //Método que roda a cada 30 FPS, sempre
+        private void internalTimer_Tick(object sender, EventArgs e)
+        {
+            // Chame o método a repetir, nesse caso o método de movimento.
+
+            // Incrementa o contador de frames
+            frameCount++;
+
+            // Código que roda a cada 2 frames 
+            if (frameCount % 2 == 0)
+            {
+                //Faz o DVD se mover na tela, passando a largura e altura do Form para o método Mova da classe DvD
+                Mova(Parent.ClientSize.Width, Parent.ClientSize.Height);
+            }
+
+            //Código que roda a cada 8 frames 
+            if (frameCount % 8 == 0)
+            {
+                animate();
+            }
+
+            // Código que roda a cada 32 frames (aprox. 1 vez por segundo)
+            if (frameCount % 32 == 0)
+            {
+                // Reseta o contador para evitar estouro de memória
+                frameCount = 0;
+            }
+        }
+
+        public void Mova(int larguraTela, int alturaTela)
         {
 
             //=== Movimento Vertical ===
@@ -47,7 +98,7 @@
                 //Top = Top - Velocidade;
                 Top = Top - Velocidade;
                 //Verifica se saiu pela parte de cima da tela
-                if (Top + Height < 0 + pixel_Height)
+                if (Top + Height < 0 + PixelHeight)
                 {
                     //Mudar a direção vertical do movimento do DvD para 'baixo'
                     DirecaoY = "bai";
@@ -69,7 +120,7 @@
             {
                 Left -= Velocidade;
                 //Verifica se saiu pela parte da esquerda da tela
-                if (Left + Width <= 0 + pixel_Width)
+                if (Left + Width <= 0 + PixelWidth)
                 {
                     //Muda a direção horizontal do movimento do DvD para 'direita'
 
@@ -91,5 +142,25 @@
 
         }
 
+        private void animate()
+        {
+
+            for (int i = Frames.Length - 1; i <= 0; i--)
+            {
+                if (currentFrame == Frames[i])
+                {
+                    if (Array.IndexOf(Frames, currentFrame) == 2)
+                    {
+                        currentFrame = Frames[0];
+                    }
+                    else
+                    {
+                        currentFrame = Frames[i + 1];
+                    }
+                }
+            }
+        }
     }
+
+
 }
