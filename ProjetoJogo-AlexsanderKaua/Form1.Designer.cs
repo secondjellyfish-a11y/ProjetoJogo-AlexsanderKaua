@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             lbl_titulo = new Label();
             btn_jogar = new Button();
+            lbCornerCounter = new Label();
             SuspendLayout();
             // 
             // lbl_titulo
@@ -58,6 +59,17 @@
             btn_jogar.UseVisualStyleBackColor = false;
             btn_jogar.Click += btn_jogar_Click;
             // 
+            // lbCornerCounter
+            // 
+            lbCornerCounter.AutoSize = true;
+            lbCornerCounter.BackColor = Color.Transparent;
+            lbCornerCounter.Font = new Font("Segoe UI", 12F);
+            lbCornerCounter.ForeColor = SystemColors.ButtonFace;
+            lbCornerCounter.Location = new Point(579, 638);
+            lbCornerCounter.Name = "lbCornerCounter";
+            lbCornerCounter.Size = new Size(0, 32);
+            lbCornerCounter.TabIndex = 2;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
@@ -66,6 +78,7 @@
             BackgroundImage = (Image)resources.GetObject("$this.BackgroundImage");
             BackgroundImageLayout = ImageLayout.Stretch;
             ClientSize = new Size(1898, 1024);
+            Controls.Add(lbCornerCounter);
             Controls.Add(btn_jogar);
             Controls.Add(lbl_titulo);
             FormBorderStyle = FormBorderStyle.None;
@@ -80,5 +93,6 @@
 
         private Label lbl_titulo;
         private Button btn_jogar;
+        private Label lbCornerCounter;
     }
 }

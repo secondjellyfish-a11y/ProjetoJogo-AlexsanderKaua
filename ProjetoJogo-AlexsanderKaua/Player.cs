@@ -5,12 +5,15 @@
     {
         public List<Bullet> Balas = new List<Bullet>(); //Lista de balas disparadas pelo jogador
 
+        public System.Windows.Forms.Timer Timer = new System.Windows.Forms.Timer();
+
         public int Velocidade { get; set; } = 30; //Variável para a velocidade de movimento do jogador (com a entrada do jogador)
         public int Vida { get; set; } = 5;
 
         //Tamanho em pixels do jogador. Essencialmente o tamanho do controle que será o objeto "jogador".
-        public const int pixel_Width = 200;
+        public const int pixel_Width = 150;
         public const int pixel_Height = 200;
+
         public Player()
         {
             //Instruções de gráfico
@@ -22,6 +25,9 @@
                 "player.png"
                 ); //Usa como referência o caminho de imagens do projeto ("Assets/") para uma imagem e cria uma string para o caminho da imagem
             Image = Image.FromFile(caminhoImagem); //Muda a propriedade de Imagem do controle para mostrar o gráfico da imagem na tela. Usa Image.FromFile(#) para puxar o arquivo.
+
+            //Criar timer para limitar quantidade de balas do jogador
+
         }
 
         /*Método de Movimento (Teclas WASD fazem o personagem mover na tela)
@@ -78,8 +84,9 @@
 
         public Bullet Atirar()
         {
-            // Cria uma nova bala na posição do jogador ajustada
-            Bullet bala = new Bullet(
+            
+                // Cria uma nova bala na posição do jogador ajustada
+                Bullet bala = new Bullet(
                 Left + (Width / 2),
                 Top + 15
                 );

@@ -14,8 +14,8 @@
 
         /*  Variáveis de Propriedade  */
         //Tamanho
-        public int PixelWidth { get; set; } = 200; //Largura que o controle terá
-        public int PixelHeight { get; set; } = 100; //Altura que o controle terá
+        public int PixelWidth { get; set; } = 250; //Largura que o controle terá
+        public int PixelHeight { get; set; } = 150; //Altura que o controle terá
 
         private System.Windows.Forms.Timer thisTimer = new System.Windows.Forms.Timer();
         private int frameCount = 0;
@@ -23,7 +23,29 @@
 
 
         public string[] Frames { get; set; } = ["dvd_nossa.png", "dvd_nossa2.png", "dvd_nossa3.png"];
-        public string currentFrame { get; set; }
+        private string _currentFrame; 
+        public string CurrentFrame { 
+            get => _currentFrame; 
+            set { 
+                //Quando a propriedade "currentFrame" for mudada, ela automaticamente procurará a imagem e mudará o programa para ela.
+                string imgPath = FindImageFile(value);
+                //Checar se arquivo existe
+                if (File.Exists(imgPath)) { 
+                    //Se existe, atribuir o nome do arquivo (sem toda a estrutura do diretório) a propriedade do frame atual.
+                    _currentFrame = value;
+                    //Mudar Imagem do controle para o valor
+                    Image = Image.FromFile(imgPath);
+
+                    //Mandar mensagem de debug
+                    System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Mudou com sucesso o frame atual de um objeto DVD para uma imagem inexistente de nome '{1}'.", System.DateTime.Now, value));
+                } 
+                else
+                {
+                    //Senão, não fazer nada e mandar mensagem no console de DEBUG
+                    System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Tentou mudar frame atual de um objeto DVD para uma imagem inexistente de nome '{1}'. O frame não foi mudado. Frame atual: {2}", System.DateTime.Now, value, CurrentFrame));
+                }
+            } 
+        }
         public int FrameTurnSpeed = 30; //Frames até mudar de frame novamente
 
 
@@ -36,17 +58,21 @@
 
             //Ativar o timer
             thisTimer.Interval = TimerInterval;
-            thisTimer.Tick += internalTimer_Tick;
+            thisTimer.Tick += Timer_Tick;
            
-
-            currentFrame = Frames[0]; //Mudar o frame atual para o primeiro frame em Frames
+            
 
             //*Controle
             Size = new System.Drawing.Size(PixelWidth, PixelHeight); //Criar novo Drawing.Size baseado nas variáveis de tamanho. 
-                                                                     //*Desenho
+            //*Desenho
+            //Mudar o sprite
+            CurrentFrame = Frames[0]; //Mudar o frame atual para o primeiro frame em Frames
             SizeMode = PictureBoxSizeMode.StretchImage;
 
-            Image = Image.FromFile(FindImageFile(currentFrame));
+            /*Não precisamos chamar:
+            * Image = Image.FromFile(FindImageFile(CurrentFrame));
+            * pois o acessor set de currentFrame já faz isso quando atribuímos para ele.
+            */
             BackColor = Color.Transparent;
 
  thisTimer.Start();
@@ -60,8 +86,9 @@
 
             return Path.Combine(Application.StartupPath, "Assets/", name);
         }
-        //Método que roda a cada 30 FPS, sempre
-        private void internalTimer_Tick(object sender, EventArgs e)
+
+        //Método de timer desse objeto
+        private void Timer_Tick(object sender, EventArgs e)
         {
             // Chame o método a repetir, nesse caso o método de movimento.
 
@@ -145,17 +172,19 @@
         private void animate()
         {
 
-            for (int i = Frames.Length - 1; i <= 0; i--)
+            for (int i = 0; i <= Frames.Length - 1; i++)
             {
-                if (currentFrame == Frames[i])
+                if (CurrentFrame == Frames[i])
                 {
-                    if (Array.IndexOf(Frames, currentFrame) == 2)
+                    if (i == 2)
                     {
-                        currentFrame = Frames[0];
+                        CurrentFrame = Frames[0];
+                        break;
                     }
                     else
                     {
-                        currentFrame = Frames[i + 1];
+                        CurrentFrame = Frames[i + 1];
+                        break;
                     }
                 }
             }

@@ -17,8 +17,33 @@ namespace ProjetoJogo_AlexsanderKaua
             this.DoubleBuffered = true;
 
             this.Controls.Add(estimulation); //Adiciona o objeto DvD na tela do Form
+
+            //*Checar se o DVD bateu no canto e incrementar um contador
+            //Criar um controle de Panel para servir como checador
+            Panel p = new Panel();
+            p.Size = new Size(10, 10);
+            //Adicionar cantos para uma lista
+            //Canto superior esquerdo 
+            p.Left = 0;
+            p.Top = 0;
+            Corners.Add(p);
+            //Canto superior direito
+            p.Left = this.Width - p.Width;
+            p.Top = 0;
+            Corners.Add(p);
+            //Canto inferior esquerdo
+            p.Left = 0;
+            p.Top = this.Height - p.Height;
+            Corners.Add(p);
+            //Canto inferior direito
+            p.Left = this.Width - p.Width;
+            p.Top = this.Height - p.Height;
+            Corners.Add(p);
+            //Adicionar colisão para os cantos da tela (para checar se a logo do DVD bateu no canto)
+
         }
 
+        public List<Panel> Corners = new List<Panel>();
 
 
         //Objeto privado de Timer (age como Timer global)
@@ -48,6 +73,8 @@ namespace ProjetoJogo_AlexsanderKaua
             if (frameCount % 2 == 0)
             {
                 //Não precisamos chamar o método do DVD, já que tem um timer interno
+
+                
             }
 
             // Código que roda a cada 32 frames (aprox. 1 vez por segundo)

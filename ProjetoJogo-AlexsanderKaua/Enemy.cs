@@ -5,19 +5,19 @@
         public int Velocidade { get; set; } = 8;
         public int Vida { get; set; } = 3;
 
-        private string currentFrame = "enemy.png"; //Sprite base para inimigos
+        protected string currentFrame = ""; //Sprite base para inimigos
 
         private int pixelWidth = 64;
         private int pixelHeight = 112;
 
-        public Enemy(int x, int y)
+        public Enemy(int x, int y, string currentFrame = "enemy.png")
         {
             Size = new Size(pixelWidth, pixelHeight);
             SizeMode = PictureBoxSizeMode.StretchImage;
             string caminhoImagem = Path.Combine(
                 Application.StartupPath,
                 "Assets/",
-                "enemy.png"
+                currentFrame
                 );
             if (File.Exists(caminhoImagem))
             {
@@ -34,6 +34,8 @@
             Left = x;
             Top = y;
         }
+
+        
 
         public virtual void Mover()
         {
