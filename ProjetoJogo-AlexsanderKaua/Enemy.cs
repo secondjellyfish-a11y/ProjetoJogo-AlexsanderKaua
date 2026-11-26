@@ -35,7 +35,7 @@
             Top = y;
         }
 
-        
+
 
         public virtual void Mover()
         {

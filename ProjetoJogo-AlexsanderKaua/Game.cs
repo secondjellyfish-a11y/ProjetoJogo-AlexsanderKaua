@@ -93,96 +93,96 @@
 
             }
         }
-            public void LimparProjeteis()
+        public void LimparProjeteis()
+        {
+            // Remove as balas que saíram da tela do formulário
+            for (int i = jogador.Balas.Count - 1; i >= 0; i--)
             {
-                // Remove as balas que saíram da tela do formulário
-                for (int i = jogador.Balas.Count - 1; i >= 0; i--)
+                Bullet bala = jogador.Balas[i];
+                //Atualizar posição da bala
+                bala.Mover();
+                //Checar se a bala saiu da tela
+                if (bala.SaiuDaTela(ClientSize.Width))
                 {
-                    Bullet bala = jogador.Balas[i];
-                    //Atualizar posição da bala
-                    bala.Mover();
-                    //Checar se a bala saiu da tela
-                    if (bala.SaiuDaTela(ClientSize.Width))
-                    {
-                        //Chama o método de remover a bala da memória interna do jogo
-                        RemoverBala(bala);
+                    //Chama o método de remover a bala da memória interna do jogo
+                    RemoverBala(bala);
 
-                    }
                 }
-            }
-            private void IniciarJogo()
-            {
-
-
-                //Instanciar um objeto Player;
-                jogador = new Player();
-                //Definir uma posição para o jogador.
-                jogador.Location = new Point(50, 340);
-                //Adicionar o Player no formulário;
-                Controls.Add(jogador);
-
-                //Ativa a verificação de teclas pressionadas
-                KeyPreview = true;
-                //Quando a tecla for pressionada, executa o método Game_KeyDown
-                KeyDown += Game_KeyDown;
-            }
-
-            private void Game_KeyDown(object sender, KeyEventArgs e)
-            {
-                //Executa o método mover passando a chave (tecla) pressionada
-                jogador.Mover(e.KeyCode, ClientSize.Width, ClientSize.Height);
-
-                if (e.KeyCode == Keys.Space)
-                {
-                    //Colocar um limite de balas do jogador na tela, para não sobrecarregar o jogo
-                    if (jogador.Balas.Count < 50)
-                    {
-                        Bullet disparo = jogador.Atirar();
-                        Controls.Add(disparo);
-                        disparo.BringToFront(); // Garante que a bala fique na frente de outros elementos
-                    }
-                }
-            }
-
-            private void CriarInimigo()
-            {
-                int x = ClientSize.Width;
-                int y = random.Next(0, ClientSize.Height - 100);
-
-                Enemy inimigo;
-                if (random.Next(0, 100) < 30)
-                {
-                    inimigo = new EnemyQuick(x, y);
-                }
-                else
-                {
-                    inimigo = new Enemy(x, y);
-                }
-
-                enemyList.Add(inimigo); //Adiciona o inimigo em EnemyList
-                Controls.Add(inimigo); //Adiciona o inimigo a Controles
-            }
-
-            private void RemoverInimigo(Enemy inimigo)
-            {
-                //Remover o inimigo da memória do jogo (coitado)
-                Controls.Remove(inimigo);
-                enemyList.Remove(inimigo);
-                inimigo.Dispose();
-            }
-
-            private void RemoverBala(Bullet bala)
-            {
-                //Remover a bala da memória do jogo 
-                Controls.Remove(bala);
-                jogador.Balas.Remove(bala);
-                bala.Dispose();
-            }
-
-
-            private void Game_Load(object sender, EventArgs e)
-            {
-
             }
         }
+        private void IniciarJogo()
+        {
+
+
+            //Instanciar um objeto Player;
+            jogador = new Player();
+            //Definir uma posição para o jogador.
+            jogador.Location = new Point(50, 340);
+            //Adicionar o Player no formulário;
+            Controls.Add(jogador);
+
+            //Ativa a verificação de teclas pressionadas
+            KeyPreview = true;
+            //Quando a tecla for pressionada, executa o método Game_KeyDown
+            KeyDown += Game_KeyDown;
+        }
+
+        private void Game_KeyDown(object sender, KeyEventArgs e)
+        {
+            //Executa o método mover passando a chave (tecla) pressionada
+            jogador.Mover(e.KeyCode, ClientSize.Width, ClientSize.Height);
+
+            if (e.KeyCode == Keys.Space)
+            {
+                //Colocar um limite de balas do jogador na tela, para não sobrecarregar o jogo
+                if (jogador.Balas.Count < 50)
+                {
+                    Bullet disparo = jogador.Atirar();
+                    Controls.Add(disparo);
+                    disparo.BringToFront(); // Garante que a bala fique na frente de outros elementos
+                }
+            }
+        }
+
+        private void CriarInimigo()
+        {
+            int x = ClientSize.Width;
+            int y = random.Next(0, ClientSize.Height - 100);
+
+            Enemy inimigo;
+            if (random.Next(0, 100) < 30)
+            {
+                inimigo = new EnemyQuick(x, y);
+            }
+            else
+            {
+                inimigo = new Enemy(x, y);
+            }
+
+            enemyList.Add(inimigo); //Adiciona o inimigo em EnemyList
+            Controls.Add(inimigo); //Adiciona o inimigo a Controles
+        }
+
+        private void RemoverInimigo(Enemy inimigo)
+        {
+            //Remover o inimigo da memória do jogo (coitado)
+            Controls.Remove(inimigo);
+            enemyList.Remove(inimigo);
+            inimigo.Dispose();
+        }
+
+        private void RemoverBala(Bullet bala)
+        {
+            //Remover a bala da memória do jogo 
+            Controls.Remove(bala);
+            jogador.Balas.Remove(bala);
+            bala.Dispose();
+        }
+
+
+        private void Game_Load(object sender, EventArgs e)
+        {
+
+        }
     }
+}

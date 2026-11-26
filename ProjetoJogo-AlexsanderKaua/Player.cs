@@ -84,12 +84,12 @@
 
         public Bullet Atirar()
         {
-            
-                // Cria uma nova bala na posição do jogador ajustada
-                Bullet bala = new Bullet(
-                Left + (Width / 2),
-                Top + 15
-                );
+
+            // Cria uma nova bala na posição do jogador ajustada
+            Bullet bala = new Bullet(
+            Left + (Width / 2),
+            Top + 15
+            );
             Balas.Add(bala);
             return bala;
         }

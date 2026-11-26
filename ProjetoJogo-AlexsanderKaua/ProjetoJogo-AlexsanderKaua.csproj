@@ -10,6 +10,76 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="assets-raw\bananaPurple_0.png" />
+    <None Remove="assets-raw\bananaPurple_1.png" />
+    <None Remove="assets-raw\bananaPurple_2.png" />
+    <None Remove="assets-raw\bananaPurple_3.png" />
+    <None Remove="assets-raw\bananaPurple_4.png" />
+    <None Remove="assets-raw\bananaPurple_5.png" />
+    <None Remove="assets-raw\bananaPurple_6.png" />
+    <None Remove="assets-raw\bananaPurple_7.png" />
+    <None Remove="assets-raw\banana_0.png" />
+    <None Remove="assets-raw\bliss_background.png" />
+    <None Remove="assets-raw\dvd_nossa.png" />
+    <None Remove="assets-raw\dvd_nossa2.png" />
+    <None Remove="assets-raw\dvd_nossa3.png" />
+    <None Remove="assets-raw\enemy-spider.png" />
+    <None Remove="assets-raw\enemy.png" />
+    <None Remove="assets-raw\player.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="assets-raw\sprites\bananaPurple_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_1.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_4.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_5.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_6.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bananaPurple_7.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\banana_0.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\bliss_background.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\dvd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\dvd_2.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\dvd_3.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\enemy-spider.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\enemy.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="assets-raw\sprites\player.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
