@@ -8,7 +8,7 @@
 
         public EnemyQuick(int x, int y) : base(x, y)
         {
-            Velocidade = 8;
+            Velocidade = 16;
             Vida = 1;
             Size = new Size(70, 70);
         }

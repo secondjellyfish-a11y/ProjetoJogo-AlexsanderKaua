@@ -2,14 +2,17 @@
 {
     public class Enemy : PictureBox
     {
-        public int Velocidade { get; set; } = 4;
+        public int Velocidade { get; set; } = 8;
         public int Vida { get; set; } = 3;
 
-        private string currentFrame = "virus-sprite-enemy.png"; //Sprite base para inimigos
+        private string currentFrame = "enemy.png"; //Sprite base para inimigos
+
+        private int pixelWidth = 64;
+        private int pixelHeight = 112;
 
         public Enemy(int x, int y)
         {
-            Size = new Size(100, 100);
+            Size = new Size(pixelWidth, pixelHeight);
             SizeMode = PictureBoxSizeMode.StretchImage;
             string caminhoImagem = Path.Combine(
                 Application.StartupPath,

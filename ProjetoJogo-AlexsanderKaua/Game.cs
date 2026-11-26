@@ -85,6 +85,7 @@
 
                     if (jogador.Vida <= 0)
                     {
+                        this.BackColor = Color.DarkRed; //Red de SANGUEEEEEEEEEEEEE
                         gameTimer.Stop();
                         MessageBox.Show("GAME OVER (tradução: você perdeu)");
                     }
