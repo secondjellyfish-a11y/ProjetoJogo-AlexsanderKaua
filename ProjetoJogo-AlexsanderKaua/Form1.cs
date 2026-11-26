@@ -39,7 +39,7 @@ namespace ProjetoJogo_AlexsanderKaua
             p.Left = this.Width - p.Width;
             p.Top = this.Height - p.Height;
             Corners.Add(p);
-            //Adicionar colisão para os cantos da tela (para checar se a logo do DVD bateu no canto)
+            
 
         }
 
@@ -74,7 +74,8 @@ namespace ProjetoJogo_AlexsanderKaua
             {
                 //Não precisamos chamar o método do DVD, já que tem um timer interno
 
-                
+                //Adicionar colisão para os cantos da tela (para checar se a logo do DVD bateu no canto)
+                //adicione código aqui
             }
 
             // Código que roda a cada 32 frames (aprox. 1 vez por segundo)
