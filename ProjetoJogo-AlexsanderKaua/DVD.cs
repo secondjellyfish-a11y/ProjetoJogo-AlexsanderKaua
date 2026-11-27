@@ -1,14 +1,9 @@
-﻿using System.ComponentModel;
-
-namespace ProjetoJogo_AlexsanderKaua
+﻿namespace ProjetoJogo_AlexsanderKaua
 {
     //Comentado por Alexsander.
 
     public class DvD : GameObject
     {
-
-        
-        
 
         /*  Variáveis de Movimento  */
         //Direção
@@ -16,19 +11,19 @@ namespace ProjetoJogo_AlexsanderKaua
         public string DirecaoY { get; set; } = "bai";
 
         //Deslocamento
-        public int Velocidade { get; set; } = 30; //Pixels que moverá cada vez que o método "mova" for chamado 
+        public int Velocidade { get; set; } = 26; //Pixels que moverá cada vez que o método "mova" for chamado 
 
         /*  Variáveis de Propriedade  */
         //Tamanho
         public int PixelWidth { get; set; } = 250; //Largura que o controle terá
         public int PixelHeight { get; set; } = 150; //Altura que o controle terá
 
-        public readonly int TimerInterval = 32;
+        public readonly int TimerInterval = 56;
 
         public int cornerCounter = 0; //Contador de colisões com os cantos da tela
 
         //=Método construtor=
-        public DvD(Control parent, int velocidadeOffset = 0) : base(250, 150) //Chama o construtor da classe base (GameObject) com os parâmetros de tamanho
+        public DvD(Control parent, int variarVelocidade = 0) : base(250, 150) //Chama o construtor da classe base (GameObject) com os parâmetros de tamanho
         {
 
             /* Controle "Parente" */
@@ -40,13 +35,14 @@ namespace ProjetoJogo_AlexsanderKaua
 
             FrameDirectory = "assets-raw/sprites/"; //Diretório onde os frames (sprites) do DVD estão localizados
             //Adicionar frames totais para a animação do DvD, que são as imagens que serão mostradas na tela
-            Frames = new string[] { "dvd.png", "dvd_2.png", "dvd_3.png" };
+            FrameSheet = new string[] { "dvd.png", "dvd_2.png", "dvd_3.png" };
             //Adicionar endereços de frames usados para a animação do DvD, que são os frames que serão mostrados na tela durante a animação.
             //No caso, são os tres frames totais, então usamos todos eles.
-            UsedFrames = new int[] { 0, 1, 2 };
+            AnimationFrames = new string[] { "dvd.png", "dvd_2.png", "dvd_3.png" };
+
 
             //Mudar o sprite
-            CurrentFrame = Frames[0]; //Mudar o frame atual para o primeiro frame em Frames
+            CurrentFrame = FrameSheet[0]; //Mudar o frame atual para o primeiro frame em Frames
 
             //Mudar posição do DVD após a criação
             //Centralizar o DVD
@@ -54,8 +50,8 @@ namespace ProjetoJogo_AlexsanderKaua
             Top = Parent.Height / 2 - this.Height;
 
             Random RandomPosicionamento = new Random();
-            //Adicionar direção inicial aleatória
-            int r = RandomPosicionamento.Next(0, 4);
+            //*Adicionar direção inicial aleatória
+            int r = RandomPosicionamento.Next(0, 4); //Chamar Random
             switch (r)
             {
                 case 0:
@@ -74,10 +70,10 @@ namespace ProjetoJogo_AlexsanderKaua
                     DirecaoX = "esq";
                     DirecaoY = "cim";
                     break;
-            }   
-{
+            }
+            {
                 //Adicionar parâmetro do construtor à velocidade do DVD
-                Velocidade += velocidadeOffset;
+                Velocidade += variarVelocidade;
 
             }
             /*Não precisamos chamar:
@@ -91,7 +87,7 @@ namespace ProjetoJogo_AlexsanderKaua
                 //*Checar se o DVD bateu no canto e incrementar um contador
                 //Criar um controle de Panel para servir como checador
                 Panel p = new Panel();
-                int cornerSize = 3; //Tamanho do controle de colisão, não precisa ser grande, apenas um ponto para checar a colisão
+                int cornerSize = 1; //Tamanho do controle de colisão, não precisa ser grande, apenas um ponto para checar a colisão
                 bool cornersAreVisible = true; //Não queremos que o controle seja visível, apenas que sirva como "detector" de colisão, exceto para debug
                 Color visibleCornerColor = Color.Aquamarine;
                 //Adicionar cantos para uma lista
@@ -154,6 +150,7 @@ namespace ProjetoJogo_AlexsanderKaua
                 }
 
                 //Adicionar o nosso evento com o método AddObjectEvent, para que o método Timer_Tick seja chamado a cada 16 milissegundos
+                //É esse método que adiciona o método "parado" Timer_Tick para um Timer global.
                 base.AddObjectEvent(Timer_Tick, TimerInterval);
 
                 //Debug
@@ -163,7 +160,7 @@ namespace ProjetoJogo_AlexsanderKaua
 
         public List<Panel> Corners = new List<Panel>();
 
-       
+
 
 
         //Método de timer desse objeto
@@ -171,34 +168,34 @@ namespace ProjetoJogo_AlexsanderKaua
         {
             // Chame o método a repetir, nesse caso o método de movimento.
 
-            
-                //Faz o DVD se mover na tela, passando a largura e altura do Form para o método Mova da classe DvD
-                Mova(Parent.ClientSize.Width, Parent.ClientSize.Height);
 
-                //Checar se o DVD bateu em algum canto da tela
-                foreach (Panel corner in Corners)
+            //Faz o DVD se mover na tela, passando a largura e altura do Form para o método Mova da classe DvD
+            Mova(Parent.ClientSize.Width, Parent.ClientSize.Height);
+
+            //Checar se o DVD bateu em algum canto da tela
+            foreach (Panel corner in Corners)
+            {
+                //Para cada canto, checar se o controle existe no Parent do DvD (o Form) e se é um Panel
+                if (Parent.Controls.Find(corner.Name, true)[0] is Panel canto)
                 {
-                    //Para cada canto, checar se o controle existe no Parent do DvD (o Form) e se é um Panel
-                    if (Parent.Controls.Find(corner.Name,true)[0] is Panel canto)
+                    //Controle encontrado, verificar colisão com o canto dentro do parente do DvD (o Form)
+                    if (this.Bounds.IntersectsWith(canto.Bounds))
                     {
-                        //Controle encontrado, verificar colisão com o canto dentro do parente do DvD (o Form)
-                        if (this.Bounds.IntersectsWith(canto.Bounds))
-                        {
 
-                            //O DVD bateu no canto
-                            base.Animate(); //Chamar o método de animação do DvD, para mudar o frame atual
-                            cornerCounter++; //Incrementar o contador de colisões
+                        //O DVD bateu no canto
+                        base.TurnFrameForward(); //Chamar o método de animação do DvD, para mudar o frame atual
+                        cornerCounter++; //Incrementar o contador de colisões
 
-                            //Mensagem de Debug
-                            System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: O DVD bateu no canto da tela.", System.DateTime.Now));
-                        }
-                    }
-                    else
-                    {
-                        //Não era o controle que esperávamos, mandar mensagem de debug
-                        System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Controle inesperado encontrado.", System.DateTime.Now));
+                        //Mensagem de Debug
+                        System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: O DVD bateu no canto da tela.", System.DateTime.Now));
                     }
                 }
+                else
+                {
+                    //Não era o controle que esperávamos, mandar mensagem de debug
+                    System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Controle inesperado encontrado.", System.DateTime.Now));
+                }
+            }
         }
 
         public void Mova(int larguraTela, int alturaTela)
@@ -250,7 +247,7 @@ namespace ProjetoJogo_AlexsanderKaua
                 }
             }
 
-            this.Refresh(); //Atualiza o controle, para que o movimento seja visível na tela
+
 
         }
 

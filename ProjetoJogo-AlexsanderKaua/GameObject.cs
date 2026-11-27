@@ -13,12 +13,47 @@
             this.BackColor = Color.Transparent; //Definir a cor de fundo como transparente
             this.Size = new Size(sizeX, sizeY);
             this.Visible = false; //Inicialmente invisível, para que possamos controlar quando ele aparece na tela
+
+            _images = new Dictionary<string, Image>();
         }
 
+        //***DEBUG***
+        protected bool DebugAlertImageChangeAttempts = true; //Se ativado, toda tentativa de mudança de CurrentFrame será alertada no console.
+        //***
+
         protected string FrameDirectory { get; set; } = "Assets/"; //Diretório onde os frames (sprites) do objeto do jogo estão localizados
-        protected string[] Frames { get; set; } = []; //Array de frames (sprites) do objeto do jogo, com todos os frames disponíveis para animação no total.
-        public int[] UsedFrames { get; set; } = []; //Array de endereços de frames (números inteiros) do objeto do jogo que estão sendo usados atualmente (para animação)
+        public string[] FrameSheet //Array de frames (strings de imagem) do objeto do jogo, com todos os frames disponíveis para animação no total.
+        {
+            get => _frameSheet;
+            set
+            {
+                if (ReferenceEquals(_frameSheet, value)) return;   // Se o Array for igual a nova array, retornar.
+
+                foreach (var img in _images.Values) img.Dispose(); //*Descarta imagens antigas (se este objeto é dono delas)
+                _images.Clear(); //Limpa o dicionário
+
+                _frameSheet = value; //Atribui à propriedade privada
+                if (value == null) return; //*Se o intuito era apagar frameSheet, interromper o código.
+
+                //*Senão,
+                //Para cada nome distinto na lista, 
+                foreach (var nome in value.Distinct())
+                {
+                    //*Achar uma Imagem baseado nas entradas de string, e adicioná-las ao dicionário _images.
+                    string path = GameObjectUtils.FindImageFile(nome, FrameDirectory);
+                    if (File.Exists(path)) //**Se arquivo existe,
+                        _images[nome] = Image.FromFile(path); //Adicionar imagem à _images
+                    else //**
+                        System.Diagnostics.Debug.WriteLine($"Frame não encontrado: '{path}'"); //Mensagem de DEBUG
+                }
+            }
+        }
+        public string[] AnimationFrames { get; set; } = []; //Array de frames (strings de imagem) do objeto do jogo que estão sendo usados atualmente (para animação)
+
+        private string[] _frameSheet;
         private string _currentFrame;
+        protected Dictionary<string, Image> _images;   // Dicionário com: nome → Image carregada
+
 
         protected List<IDisposable> UsedTickSubscriptions = new();
 
@@ -28,27 +63,57 @@
             get => _currentFrame;
             set
             {
-                //Quando a propriedade "currentFrame" for mudada, ela automaticamente procurará a imagem e mudará o programa para ela, no diretório especificado na propriedade FrameDirectory.
-                string imgPath = GameObjectUtils.FindImageFile(value,FrameDirectory);
-                //Checar se arquivo existe
-                if (File.Exists(imgPath))
-                {
-                    //Se existe, atribuir o nome do arquivo (sem toda a estrutura do diretório) a propriedade do frame atual.
-                    _currentFrame = value;
-                    //Mudar Imagem do controle para o valor
-                    Image = Image.FromFile(imgPath);
+                //*Se o frame atual for diferente do frame que queremos mudar, mudar o frame atual para o novo frame, e mudar a imagem do objeto do jogo para a imagem correspondente ao novo frame.
 
-                    //Mandar mensagem de debug
-                    System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Mudou com sucesso o frame atual de um objeto de jogo para uma imagem de nome '{1}'.", System.DateTime.Now, value));
-                }
-                else
+                if (_currentFrame == value) return; //Se o frame atual for o mesmo que o frame que queremos mudar, não fazer nada
+                if (_images.TryGetValue(value, out var img) == false) //*Se o frame que queremos mudar não existe no dicionário de imagens, não fazer nada
                 {
-                    //Senão, não fazer nada e mandar mensagem no console de DEBUG
-                    System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Tentou mudar frame atual de um objeto de jogo para uma imagem inexistente do caminho '{1}'. O frame não foi mudado. Frame atual: {2}", System.DateTime.Now, imgPath, CurrentFrame));
+                    // Frame inexistente — log no console e return
+                    //**DEBUG**
+                    if (DebugAlertImageChangeAttempts) System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Tentativa de mudar para frame inexistente '{1}' em GameObject do tipo {2}. Frame atual: '{3}'.", System.DateTime.Now, value, GetType().Name, _currentFrame));
+                    //-***-
+                    return;
                 }
+                //*Senão, atribuir valor para o frame atual, mudando a imagem, e editar a propriedade privada respectiva.
+                _currentFrame = value;
+                Image = img;
+
+                //**DEBUG**
+                if (DebugAlertImageChangeAttempts) System.Diagnostics.Debug.WriteLine(String.Format("[{0}]: Mudando frame de GameObject do tipo {1} para '{2}'.", System.DateTime.Now, GetType().Name, _currentFrame));
+                //-***-
             }
         }
 
+        // Guarda os retângulos da posição ANTES do último movimento
+        public List<Rectangle> PreviousBounds { get; } = new List<Rectangle>();
+
+        public Rectangle Bounds => new Rectangle((int)Left, (int)Top, Width, Height);
+
+        private float _left, _top;
+
+        public float Left
+        {
+            get => _left;
+            set { PreviousBounds.Add(Bounds); _left = value; }
+        }
+        public float Top
+        {
+            get => _top;
+            set { PreviousBounds.Add(Bounds); _top = value; }
+        }
+        public float Right
+        {
+            get => _left + Width;
+            set => Left = value - Width;
+        }
+        public float Bottom
+        {
+            get => _top + Height;
+            set => Top = value - Height;
+        }
+
+        //Sobrescreve o método Dispose para remover eventos de tick usados por esse objeto do jogo,
+        //para que eles não continuem rodando após o objeto ser destruído, e fiquem gastando memória.
         protected override void Dispose(bool disposing)
         {
             //Se livra dos eventos de tick usados por esse objeto do jogo, para que eles não continuem rodando após o objeto ser destruído.
@@ -64,63 +129,77 @@
             base.Dispose(disposing);
         }
 
-        protected void AddObjectEvent(Action timerAction, int interval)
+
+
+        protected IDisposable AddObjectEvent(Action timerAction, int intervalMs)
         {
-            var subscription = GameObjectUtils.AddTickEvent(timerAction, interval);
+            //Chama o método estático AddTickEvent da classe GameObjectUtils para adicionar um evento de tick usado por esse objeto do jogo,
+            //e retorna a assinatura do evento para que ele possa ser removido quando o objeto for destruído.
+            var subscription = GameObjectUtils.AddTickEvent(timerAction, intervalMs);
             //Adiciona um evento de tick usado por esse objeto do jogo, para que ele possa ser removido quando o objeto for destruído.
             UsedTickSubscriptions.Add(subscription);
+            return subscription;
         }
 
-        protected void Animate()
+        //Método de animação do objeto do jogo, que muda o frame atual para o próximo frame em AnimationFrames (frames usados no momento para animação)
+        protected void TurnFrameForward()
         {
-            int currentFrameIndex = Array.IndexOf(Frames, CurrentFrame);
-            //Método de animação do objeto do jogo, que muda o frame atual para o próximo frame em UsedFrames
-            for (int i = 0; i <= UsedFrames.Length - 1; i++)
+            //Método de animação do objeto do jogo, que muda o frame atual para o próximo frame em AnimationFrames
+            for (int i = 0; i <= AnimationFrames.Length - 1; i++)
             {
-                if (currentFrameIndex == UsedFrames[i])
+                if (AnimationFrames.Length > 0)
                 {
-                    //Se o frame atual for o último frame em UsedFrames, mudar para o primeiro frame em UsedFrames, senão mudar para o próximo frame em UsedFrames
-                    if (i == UsedFrames.Length - 1)
+                    //Se o frame atual for o último frame em AnimationFrames, mudar para o primeiro frame em AnimationFrames, senão mudar para o próximo frame em AnimationFrames
+                    if (i == AnimationFrames.Length - 1)
                     {
-                        CurrentFrame = Frames[UsedFrames[0]];
+                        CurrentFrame = AnimationFrames[0];
                         break;
                     }
                     else
                     {
-                        CurrentFrame = Frames[UsedFrames[i + 1]];
-                        break;
+                        //Se o frame atual for um frame em AnimationFrames, e não for o último,
+                        if (CurrentFrame == AnimationFrames[i])
+                        {
+                            //Avançar uma casa nos frames de animação
+                            CurrentFrame = AnimationFrames[i + 1];
+                            break;
+                        }
                     }
                 }
             }
         }
 
-        //Classe simples que representa um evento de tick do Timer que já está rodando, e pode ser cancelado com Dispose() quando não for mais necessário.
-        protected sealed class TickSubscription : IDisposable
-        {
-            private Action _unsubscribe;
 
-            //Construtor
-            public TickSubscription(Action unsubscribe) => _unsubscribe = unsubscribe;
-
-            //Remove o evento do Timer, para que ele não seja mais chamado.
-            public void Dispose() { _unsubscribe?.Invoke(); _unsubscribe = null; }
-        }
 
         //Classe estática de utilidades para objetos do jogo, que contém métodos úteis para todos os objetos do jogo.
         public static class GameObjectUtils
         {
 
+            //Classe simples que representa um evento de tick do Timer que já está rodando, e pode ser cancelado com Dispose() quando não for mais necessário.
+            private sealed class TickSubscription(Action unsubscribe) : IDisposable
+            {
+                //unsubscribe deve ser criado com um método de "() => timer.Tick -= handler",
+                //então quando chamamos Dispose(), ele remove o evento do Timer, para que ele não seja mais chamado.
+                private Action? _unsubscribe = unsubscribe;
+
+                //Remove o evento do Timer, para que ele não seja mais chamado.
+                public void Dispose()
+                {
+                    _unsubscribe?.Invoke(); //Invoca o método de unsubscribe, que remove o evento do Timer
+                    _unsubscribe = null; //Remove o método, caso seja chamado de novo.
+                }
+            }
+
             //Cria um Timer que pode ser usado por todos os objetos do jogo, para animação e movimentação.
             private static System.Windows.Forms.Timer timer;
             private static readonly int tickInterval = 32; //Intervalo de ticks do Timer, em milissegundos (aproximadamente 30 FPS)
 
-            private static int _tickCounter = 0; //Contador de ticks do Timer, para controlar a frequência das ações (frames)
 
+            //Construtor estático da classe GameObjectUtils, que inicializa o Timer global para objetos do jogo.
             static GameObjectUtils()
             {
                 timer = new System.Windows.Forms.Timer();
                 timer.Interval = tickInterval; // Aproximadamente 30 FPS
-                timer.Tick += Base_Tick; //Adiciona o método Base_Tick ao evento Tick do Timer
                 timer.Start();
             }
 
@@ -148,22 +227,6 @@
                 };
                 timer.Tick += handler;
                 return new TickSubscription(() => timer.Tick -= handler);
-            }
-           
-
-            
-
-            //Método privado, é o método que roda a cada tick do Timer, e chama todos os eventos adicionados ao Timer.
-            static private void Base_Tick(object sender, EventArgs e)
-            {
-                // Incrementa o contador de ticks
-                _tickCounter++;
-                // Código que roda a cada 32 ticks (aprox. 1 vez por segundo)
-                if (_tickCounter % tickInterval == 0)
-                {
-                    // Reseta o contador para evitar estouro de memória
-                    _tickCounter = 0;
-                }
             }
 
 

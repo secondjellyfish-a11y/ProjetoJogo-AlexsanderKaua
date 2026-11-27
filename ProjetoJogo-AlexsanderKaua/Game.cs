@@ -8,21 +8,18 @@
         private int contadorSpawn = 0;
 
         //Mantém o Timer do outro Form
-        private System.Windows.Forms.Timer gameTimer;
+        private System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
 
-        public Game(System.Windows.Forms.Timer prevTimer)
+        public Game()
         {
             InitializeComponent();
             this.DoubleBuffered = true; //Ativa o Double Buffer para o Form, evitando que os elementos "piscem" na tela
 
             IniciarJogo();
 
-            //Mantém o Timer do outro Form, por conveniência.
-            this.gameTimer = prevTimer;
+            gameTimer.Interval = 32; // Repita a ação a cada 'n' milissegundos, nesse caso 32, que equivale à mais ou menos 30 FPS
+            gameTimer.Tick += Timer_Tick; //Atribua o método repeatTimer_Tick ao Timer
 
-
-            //Adiciona um evento novo ao Timer. Isso NÃO remove o evento que já existia, apenas adiciona um novo evento para ser executado a cada tick do Timer.
-            gameTimer.Tick += TimerTick;
 
             //Iniciar o Timer (começa a contar o tempo e executar os eventos a cada tick)
             gameTimer.Start();
@@ -30,7 +27,7 @@
 
 
         //Evento Global do Timer
-        public void TimerTick(object sender, EventArgs e)
+        public void Timer_Tick(object sender, EventArgs e)
         {
 
             LimparProjeteis(); //Limpa as balas do jogador que saíram da tela
